@@ -192,11 +192,16 @@ inject_custom_css(st.session_state.dark_mode)
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
     prev_mode = st.session_state.dark_mode
-    current_input_mode = st.session_state.input_mode
-    st.session_state.dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state.dark_mode)
-    if st.session_state.dark_mode != prev_mode:
-        st.session_state.input_mode = current_input_mode
-        st.rerun()
+current_input_mode = st.session_state.input_mode
+current_tab = st.session_state.current_tab
+
+st.session_state.dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state.dark_mode)
+
+if st.session_state.dark_mode != prev_mode:
+    st.session_state.input_mode = current_input_mode
+    st.session_state.current_tab = current_tab  # ✅ Preserve current tab
+    st.rerun()
+
     st.markdown("### Navigation")
     st.session_state.current_tab = st.radio("Go to:", ["Home", "Progress", "Saved Notes"], label_visibility="collapsed")
     if st.session_state.current_tab == "Home":
