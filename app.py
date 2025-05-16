@@ -10,7 +10,8 @@ from langchain_community.tools import DuckDuckGoSearchRun
 load_dotenv()
 
 # Langchain setup
-llm = ChatOpenAI(temperature=0.2, model_name="gpt-3.5-turbo")
+import os
+llm = ChatOpenAI(openai_api_key=os.environ["OPENAI_API_KEY"], temperature=0.2, model_name="gpt-3.5-turbo")
 search = DuckDuckGoSearchRun()
 
 # Prompts
