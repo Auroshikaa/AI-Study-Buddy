@@ -5,5 +5,5 @@ openai
 langchain
 langchain-community
 duckduckgo-search
-streamlit-auth0-component @ git+https://github.com/hahnicity/streamlit-auth0-component.git@main
+#streamlit-auth0-component @ git+https://github.com/hahnicity/streamlit-auth0-component.git@main
 

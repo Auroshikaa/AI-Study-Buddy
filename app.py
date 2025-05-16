@@ -1,7 +1,6 @@
 import streamlit as st
 st.set_page_config(page_title="Agentic Study Assistant", layout="wide")
-from streamlit_auth0_component import login_button
-
+from streamlit_auth0_component.streamlit_auth0_component import login_button
 auth0_info = {
     "client_id": st.secrets["auth0"]["client_id"],
     "client_secret": st.secrets["auth0"]["client_secret"],
