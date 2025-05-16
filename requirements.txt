@@ -1,7 +1,7 @@
+streamlit
 openai
 langchain
-faiss-cpu
-tiktoken
 python-dotenv
 duckduckgo-search
+PyPDF2
 streamlit-auth0-component
