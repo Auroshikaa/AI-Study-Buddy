@@ -1,9 +1,6 @@
 streamlit
+python-dotenv
 openai
 langchain
-python-dotenv
-duckduckgo-search
-PyPDF2
-streamlit-auth0-component
 langchain-community
-langchain-openai
+duckduckgo-search
