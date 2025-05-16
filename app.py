@@ -1,7 +1,7 @@
 import streamlit as st
 import re
 from dotenv import load_dotenv
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.tools import DuckDuckGoSearchRun
@@ -11,7 +11,7 @@ load_dotenv()
 
 # Langchain setup
 import os
-llm = ChatOpenAI(openai_api_key=os.environ["OPENAI_API_KEY"], temperature=0.2, model_name="gpt-3.5-turbo")
+llm = ChatOpenAI(openai_api_key=st.secrets["OPENAI_API_KEY"], temperature=0.2, model_name="gpt-3.5-turbo")
 search = DuckDuckGoSearchRun()
 
 # Prompts
