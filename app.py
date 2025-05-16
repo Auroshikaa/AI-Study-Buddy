@@ -64,7 +64,7 @@ quizzer_chain = LLMChain(llm=llm, prompt=quizzer_prompt)
 suggestion_chain = LLMChain(llm=llm, prompt=suggestion_prompt)
 
 # --- UI CONFIG ---
-st.set_page_config(page_title="Agentic Study Assistant", layout="wide")
+#st.set_page_config(page_title="Agentic Study Assistant", layout="wide")
 
 # --- Session State ---
 for key, default in {
