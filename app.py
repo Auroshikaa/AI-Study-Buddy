@@ -1,7 +1,7 @@
 import streamlit as st
 import re
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.tools import DuckDuckGoSearchRun
@@ -11,7 +11,11 @@ load_dotenv()
 
 # Langchain setup
 import os
-llm = ChatOpenAI(openai_api_key=st.secrets["OPENAI_API_KEY"], temperature=0.2, model_name="gpt-3.5-turbo")
+OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+if not OPENAI_API_KEY:
+    st.error("❌ OpenAI API key not found. Add it to Streamlit Secrets or .env file.")
+    st.stop()
+llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.2, model_name="gpt-3.5-turbo")
 search = DuckDuckGoSearchRun()
 
 # Prompts
