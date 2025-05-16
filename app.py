@@ -1,20 +1,10 @@
 import streamlit as st
 st.set_page_config(page_title="Agentic Study Assistant", layout="wide")
-from streamlit_auth0_component.streamlit_auth0_component import login_button
-auth0_info = {
-    "client_id": st.secrets["auth0"]["client_id"],
-    "client_secret": st.secrets["auth0"]["client_secret"],
-    "domain": st.secrets["auth0"]["domain"],
-}
-
-user_info = login_button(auth0_info)
-
-if user_info:
-    st.session_state["user"] = user_info
-else:
-    st.stop()
-
 import re
+import requests
+import json
+import firebase_admin
+from firebase_admin import credentials
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -24,6 +14,62 @@ from langchain_community.tools import DuckDuckGoSearchRun
 
 load_dotenv()
 
+if not firebase_admin._apps:
+    cred = credentials.Certificate("firebase_key.json")
+    firebase_admin.initialize_app(cred)
+
+API_KEY = os.getenv("FIREBASE_API_KEY")
+
+def firebase_login():
+    st.title("🔐 Login to Agentic Study Assistant")
+
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if not email or not password:
+            st.warning("Please enter both email and password.")
+            return False
+
+        try:
+            url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}"
+            payload = {
+                "email": email,
+                "password": password,
+                "returnSecureToken": True
+            }
+            res = requests.post(url, data=payload)
+            res_data = res.json()
+
+            if "idToken" in res_data:
+                st.session_state["user"] = {
+                    "email": email,
+                    "idToken": res_data["idToken"],
+                    "refreshToken": res_data["refreshToken"]
+                }
+                st.success("✅ Logged in successfully!")
+                st.rerun()
+            else:
+                st.error(res_data.get("error", {}).get("message", "Login failed."))
+
+        except Exception as e:
+            st.error(f"Error: {e}")
+    return False
+
+def firebase_logout():
+    if st.button("🚪 Logout"):
+        st.session_state.pop("user", None)
+        st.success("Logged out.")
+        st.rerun()
+
+# Require login
+if "user" not in st.session_state:
+    firebase_login()
+    st.stop()
+else:
+    firebase_logout()
+    st.success(f"🔓 Logged in as: {st.session_state['user']['email']}")
+    
 # Langchain setup
 import os
 OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))

@@ -5,5 +5,8 @@ openai
 langchain
 langchain-community
 duckduckgo-search
+requests
+firebase-admin
+python-dotenv
 #streamlit-auth0-component @ git+https://github.com/hahnicity/streamlit-auth0-component.git@main
 
