@@ -193,9 +193,11 @@ with st.sidebar:
     st.markdown("## ⚙️ Settings")
     prev_mode = st.session_state.dark_mode
     current_input_mode = st.session_state.input_mode
+    current_tab = st.session_state.current_tab
     st.session_state.dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state.dark_mode)
     if st.session_state.dark_mode != prev_mode:
         st.session_state.input_mode = current_input_mode
+        st.session_state.current_tab = current_tab 
         st.rerun()
 
 
