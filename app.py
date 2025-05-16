@@ -1,5 +1,20 @@
 import streamlit as st
 st.set_page_config(page_title="Agentic Study Assistant", layout="wide")
+from streamlit_auth0_component import login_button
+
+auth0_info = {
+    "client_id": st.secrets["auth0"]["client_id"],
+    "client_secret": st.secrets["auth0"]["client_secret"],
+    "domain": st.secrets["auth0"]["domain"],
+}
+
+user_info = login_button(auth0_info)
+
+if user_info:
+    st.session_state["user"] = user_info
+else:
+    st.stop()
+
 import re
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOpenAI
