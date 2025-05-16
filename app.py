@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(page_title="Agentic Study Assistant", layout="wide")
 import re
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOpenAI
