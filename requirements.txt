@@ -6,3 +6,4 @@ duckduckgo-search
 PyPDF2
 streamlit-auth0-component
 langchain-community
+langchain-openai
