@@ -4,3 +4,4 @@ openai
 langchain
 langchain-community
 duckduckgo-search
+streamlit-auth0-component==0.1.5
