@@ -1,7 +1,7 @@
 import streamlit as st
 import re
 from dotenv import load_dotenv
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.tools import DuckDuckGoSearchRun
