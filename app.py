@@ -18,7 +18,6 @@ if not OPENAI_API_KEY:
     st.stop()
 llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.2, model_name="gpt-3.5-turbo")
 
-st.write("OpenAI Key found:", bool(OPENAI_API_KEY))
 
 search = DuckDuckGoSearchRun()
 
