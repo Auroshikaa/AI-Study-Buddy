@@ -202,7 +202,8 @@ with st.sidebar:
 
 
     st.markdown("### Navigation")
-    st.session_state.current_tab = st.radio("Go to:", ["Home", "Progress", "Saved Notes"], label_visibility="collapsed")
+    selected_tab = st.radio("Go to:", ["Home", "Progress", "Saved Notes"], index=["Home", "Progress", "Saved Notes"].index(st.session_state.current_tab), label_visibility="collapsed")
+    st.session_state.current_tab = selected_tab
     if st.session_state.current_tab == "Home":
         st.session_state.input_mode = st.selectbox("Study using:", ["Topic", "YouTube Video", "Upload Slides (PDF)"], index=["Topic", "YouTube Video", "Upload Slides (PDF)"].index(st.session_state.input_mode))
 
