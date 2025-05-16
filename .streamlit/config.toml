@@ -1,0 +1,7 @@
+[theme]
+base = "light"  # You can toggle between "light" or "dark" in the sidebar later
+primaryColor = "#8a2be2"     # A bold purple
+backgroundColor = "#f3f3f3"  # Soft light background
+secondaryBackgroundColor = "#ffffff"  # For card sections
+textColor = "#1c1c1c"        # Near-black text for readability
+font = "sans serif"
