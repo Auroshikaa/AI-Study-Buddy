@@ -4,7 +4,8 @@ import re
 import requests
 import json
 import firebase_admin
-from firebase_admin import credentials
+from firebase_admin import credentials, auth
+import pyrebase
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -14,9 +15,25 @@ from langchain_community.tools import DuckDuckGoSearchRun
 
 load_dotenv()
 
+# Initialize Firebase Admin
 if not firebase_admin._apps:
-    cred = credentials.Certificate("firebase_key.json")
+    cred = credentials.Certificate(st.secrets["FIREBASE_KEY"])
     firebase_admin.initialize_app(cred)
+
+# Firebase config for client-side login
+firebase_config = {
+    "apiKey": st.secrets["FIREBASE_API_KEY"],
+    "authDomain": f"{st.secrets['FIREBASE_KEY']['project_id']}.firebaseapp.com",
+    "databaseURL": "",
+    "projectId": st.secrets["FIREBASE_KEY"]["project_id"],
+    "storageBucket": f"{st.secrets['FIREBASE_KEY']['project_id']}.appspot.com",
+    "messagingSenderId": "",
+    "appId": "",
+    "measurementId": ""
+}
+firebase = pyrebase.initialize_app(firebase_config)
+auth_client = firebase.auth()
+
 
 API_KEY = os.getenv("FIREBASE_API_KEY")
 

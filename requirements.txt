@@ -7,6 +7,7 @@ langchain-community
 duckduckgo-search
 requests
 firebase-admin
-python-dotenv
+firebase-admin==6.5.0
+pyrebase4==5.2.4
 #streamlit-auth0-component @ git+https://github.com/hahnicity/streamlit-auth0-component.git@main
 
