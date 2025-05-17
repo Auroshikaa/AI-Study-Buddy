@@ -17,7 +17,7 @@ load_dotenv()
 
 # Initialize Firebase Admin
 if not firebase_admin._apps:
-    cred = credentials.Certificate(st.secrets["FIREBASE_KEY"])
+    cred = credentials.Certificate(dict(st.secrets["FIREBASE_KEY"]))
     firebase_admin.initialize_app(cred)
 
 # Firebase config for client-side login
