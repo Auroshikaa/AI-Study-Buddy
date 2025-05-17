@@ -8,6 +8,6 @@ duckduckgo-search
 requests
 firebase-admin
 firebase-admin==6.5.0
-pyrebase4==5.2.4
+pyrebase4==4.8.0
 #streamlit-auth0-component @ git+https://github.com/hahnicity/streamlit-auth0-component.git@main
 
