@@ -16,6 +16,8 @@ from langchain_community.tools import DuckDuckGoSearchRun
 load_dotenv()
 
 if not firebase_admin._apps:
+
+    firebase_key = json.loads(st.secrets["FIREBASE_KEY"]) 
     cred = credentials.Certificate(st.secrets["FIREBASE_KEY"]) 
     firebase_admin.initialize_app(cred)
 
