@@ -30,8 +30,15 @@ FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY", os.getenv("FIREBASE_API_KE
 def firebase_auth_ui():
     st.title("🔐 Agentic Study Assistant Access")
 
-    # Show login form if not in signup mode
-    if not st.session_state.get("show_signup", False):
+    # Detect link clicks with JavaScript and Streamlit's query params
+    query_params = st.experimental_get_query_params()
+
+    if "signup" in query_params:
+        st.session_state["show_signup"] = True
+    else:
+        st.session_state["show_signup"] = False
+
+    if not st.session_state["show_signup"]:
         with st.form("login_form"):
             st.subheader("Login")
             email = st.text_input("Email", key="login_email")
@@ -54,27 +61,30 @@ def firebase_auth_ui():
                     if "idToken" in data:
                         st.session_state["user"] = {"email": email, "idToken": data["idToken"]}
                         st.success("✅ Logged in successfully!")
+                        st.experimental_set_query_params()  # clear any ?signup param
                         st.rerun()
                     else:
                         st.error(data.get("error", {}).get("message", "Login failed."))
                 except Exception as e:
                     st.error(f"Login error: {e}")
 
-        # "Create account" link
-        st.markdown("Don't have an account? [Create one](#)", unsafe_allow_html=True)
-        if st.button("⬆ Show Sign Up"):
-            st.session_state["show_signup"] = True
-            st.rerun()
+        st.markdown("""
+            <p style='margin-top: 1em;'>
+                Don't have an account?
+                <a href='?signup=1'>Create one</a>
+            </p>
+        """, unsafe_allow_html=True)
 
     else:
         with st.form("signup_form"):
             st.subheader("Create Account")
             email = st.text_input("New Email", key="signup_email")
             password = st.text_input("New Password", type="password", key="signup_password")
-            signup = st.form_submit_button("Create Account")
-            if signup:
+            submit = st.form_submit_button("Create Account")
+
+            if submit:
                 if not email or not password:
-                    st.warning("Please enter email and password.")
+                    st.warning("Please enter both email and password.")
                     return
                 try:
                     url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={FIREBASE_API_KEY}"
@@ -88,15 +98,20 @@ def firebase_auth_ui():
                     if "idToken" in data:
                         st.session_state["user"] = {"email": email, "idToken": data["idToken"]}
                         st.success("✅ Account created and logged in!")
+                        st.experimental_set_query_params()
                         st.rerun()
                     else:
                         st.error(data.get("error", {}).get("message", "Signup failed."))
                 except Exception as e:
                     st.error(f"Signup error: {e}")
 
-        if st.button("⬅ Back to Login"):
-            st.session_state["show_signup"] = False
-            st.rerun()
+        st.markdown("""
+            <p style='margin-top: 1em;'>
+                Already have an account?
+                <a href='.'>← Back to login</a>
+            </p>
+        """, unsafe_allow_html=True)
+
 
 
 def firebase_logout():
