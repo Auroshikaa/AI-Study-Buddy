@@ -22,47 +22,67 @@ if not firebase_admin._apps:
 FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY", os.getenv("FIREBASE_API_KEY"))
 
 # --- Firebase Auth REST login ---
-def firebase_login():
-    st.title("🔐 Login / Signup for Agentic Study Assistant")
+def firebase_auth_ui():
+    st.title("🔐 Agentic Study Assistant Access")
 
-    mode = st.radio("Choose mode", ["Login", "Sign up"], horizontal=True)
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
+    with st.form("login_form"):
+        st.subheader("Login")
+        email = st.text_input("Email", key="login_email")
+        password = st.text_input("Password", type="password", key="login_password")
+        submit = st.form_submit_button("Login")
 
-    action = "Login" if mode == "Login" else "Create Account"
-    if st.button(action):
-        if not email or not password:
-            st.warning("Please enter both email and password.")
-            return
-
-        url = (
-            f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}"
-            if mode == "Login"
-            else f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={FIREBASE_API_KEY}"
-        )
-        payload = {
-            "email": email,
-            "password": password,
-            "returnSecureToken": True
-        }
-
-        try:
-            res = requests.post(url, json=payload)
-            data = res.json()
-
-            if "idToken" in data:
-                st.session_state["user"] = {
+        if submit:
+            if not email or not password:
+                st.warning("Please enter both email and password.")
+                return
+            try:
+                url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}"
+                payload = {
                     "email": email,
-                    "idToken": data["idToken"]
+                    "password": password,
+                    "returnSecureToken": True
                 }
-                st.success(f"✅ {mode} successful")
-                st.rerun()
-            else:
-                st.error(data.get("error", {}).get("message", f"{mode} failed."))
+                res = requests.post(url, json=payload)
+                data = res.json()
+                if "idToken" in data:
+                    st.session_state["user"] = {"email": email, "idToken": data["idToken"]}
+                    st.success("✅ Logged in successfully!")
+                    st.rerun()
+                else:
+                    st.error(data.get("error", {}).get("message", "Login failed."))
+            except Exception as e:
+                st.error(f"Login error: {e}")
 
-        except Exception as e:
-            st.error(f"{mode} error: {e}")
+    st.divider()
 
+    st.subheader("Create an Account")
+    signup_method = st.radio("Choose sign up method:", ["Email"], horizontal=True)
+    if signup_method == "Email":
+        with st.form("signup_form"):
+            email = st.text_input("New Email", key="signup_email")
+            password = st.text_input("New Password", type="password", key="signup_password")
+            signup = st.form_submit_button("Create Account")
+            if signup:
+                if not email or not password:
+                    st.warning("Please enter email and password.")
+                    return
+                try:
+                    url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={FIREBASE_API_KEY}"
+                    payload = {
+                        "email": email,
+                        "password": password,
+                        "returnSecureToken": True
+                    }
+                    res = requests.post(url, json=payload)
+                    data = res.json()
+                    if "idToken" in data:
+                        st.session_state["user"] = {"email": email, "idToken": data["idToken"]}
+                        st.success("✅ Account created and logged in!")
+                        st.rerun()
+                    else:
+                        st.error(data.get("error", {}).get("message", "Signup failed."))
+                except Exception as e:
+                    st.error(f"Signup error: {e}")
 
 def firebase_logout():
     if st.button("🚪 Logout"):
@@ -72,7 +92,7 @@ def firebase_logout():
 
 # --- Require login ---
 if "user" not in st.session_state:
-    firebase_login()
+    firebase_auth_ui()
     st.stop()
 else:
     firebase_logout()
