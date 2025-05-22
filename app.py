@@ -62,11 +62,19 @@ def firebase_auth_ui():
                 except Exception as e:
                     st.error(f"Login error: {e}")
 
-        # Toggle to sign up form
-        if st.markdown("Don't have an account? [Create one](#)"):
-            if st.button("⬆ Show Sign Up", key="show_signup_button"):
-                st.session_state["show_signup"] = True
-                st.rerun()
+        st.markdown("---")
+        if st.markdown("Don't have an account? [Create one](#)", unsafe_allow_html=True):
+            js = """
+            <script>
+            const links = Array.from(parent.document.querySelectorAll('a[href="#"]'));
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    window.parent.postMessage({ type: 'toggle_signup' }, '*');
+                });
+            });
+            </script>
+            """
+            st.markdown(js, unsafe_allow_html=True)
 
     else:
         with st.form("signup_form"):
@@ -98,12 +106,34 @@ def firebase_auth_ui():
                 except Exception as e:
                     st.error(f"Signup error: {e}")
 
-        # Toggle back to login
-        if st.markdown("Already have an account? [← Back to login](#)"):
-            if st.button("⬅ Back to Login", key="back_to_login_button"):
-                st.session_state["show_signup"] = False
-                st.rerun()
+        st.markdown("---")
+        if st.markdown("Already have an account? [← Back to login](#)", unsafe_allow_html=True):
+            js = """
+            <script>
+            const links = Array.from(parent.document.querySelectorAll('a[href="#"]'));
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    window.parent.postMessage({ type: 'toggle_signup' }, '*');
+                });
+            });
+            </script>
+            """
+            st.markdown(js, unsafe_allow_html=True)
 
+# JavaScript <-> Python bridge to toggle state
+st.markdown("""
+<script>
+window.addEventListener("message", (event) => {
+    if (event.data?.type === "toggle_signup") {
+        window.location.reload();
+    }
+});
+</script>
+""", unsafe_allow_html=True)
+
+# We ensure this toggle runs early in the app
+if "_toggle_signup" not in st.session_state:
+    st.session_state["_toggle_signup"] = False
 
 
 
