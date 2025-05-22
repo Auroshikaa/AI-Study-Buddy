@@ -23,33 +23,46 @@ FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY", os.getenv("FIREBASE_API_KE
 
 # --- Firebase Auth REST login ---
 def firebase_login():
-    st.title("🔐 Login to Agentic Study Assistant")
+    st.title("🔐 Login / Signup for Agentic Study Assistant")
+
+    mode = st.radio("Choose mode", ["Login", "Sign up"], horizontal=True)
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
-    if st.button("Login"):
+
+    action = "Login" if mode == "Login" else "Create Account"
+    if st.button(action):
         if not email or not password:
             st.warning("Please enter both email and password.")
             return
+
+        url = (
+            f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}"
+            if mode == "Login"
+            else f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={FIREBASE_API_KEY}"
+        )
+        payload = {
+            "email": email,
+            "password": password,
+            "returnSecureToken": True
+        }
+
         try:
-            url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}"
-            payload = {
-                "email": email,
-                "password": password,
-                "returnSecureToken": True
-            }
             res = requests.post(url, json=payload)
             data = res.json()
+
             if "idToken" in data:
                 st.session_state["user"] = {
                     "email": email,
                     "idToken": data["idToken"]
                 }
-                st.success("✅ Login successful")
+                st.success(f"✅ {mode} successful")
                 st.rerun()
             else:
-                st.error(data.get("error", {}).get("message", "Login failed."))
+                st.error(data.get("error", {}).get("message", f"{mode} failed."))
+
         except Exception as e:
-            st.error(f"Login error: {e}")
+            st.error(f"{mode} error: {e}")
+
 
 def firebase_logout():
     if st.button("🚪 Logout"):
