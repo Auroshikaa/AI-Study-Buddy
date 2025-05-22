@@ -30,12 +30,7 @@ FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY", os.getenv("FIREBASE_API_KE
 def firebase_auth_ui():
     st.title("🔐 Agentic Study Assistant Access")
 
-    # Detect link clicks with JavaScript and Streamlit's query params
-    query_params = st.experimental_get_query_params()
-
-    if "signup" in query_params:
-        st.session_state["show_signup"] = True
-    else:
+    if "show_signup" not in st.session_state:
         st.session_state["show_signup"] = False
 
     if not st.session_state["show_signup"]:
@@ -61,19 +56,17 @@ def firebase_auth_ui():
                     if "idToken" in data:
                         st.session_state["user"] = {"email": email, "idToken": data["idToken"]}
                         st.success("✅ Logged in successfully!")
-                        st.experimental_set_query_params()  # clear any ?signup param
                         st.rerun()
                     else:
                         st.error(data.get("error", {}).get("message", "Login failed."))
                 except Exception as e:
                     st.error(f"Login error: {e}")
 
-        st.markdown("""
-            <p style='margin-top: 1em;'>
-                Don't have an account?
-                <a href='?signup=1'>Create one</a>
-            </p>
-        """, unsafe_allow_html=True)
+        # Toggle to sign up form
+        if st.markdown("Don't have an account? [Create one](#)"):
+            if st.button("⬆ Show Sign Up", key="show_signup_button"):
+                st.session_state["show_signup"] = True
+                st.rerun()
 
     else:
         with st.form("signup_form"):
@@ -98,19 +91,19 @@ def firebase_auth_ui():
                     if "idToken" in data:
                         st.session_state["user"] = {"email": email, "idToken": data["idToken"]}
                         st.success("✅ Account created and logged in!")
-                        st.experimental_set_query_params()
+                        st.session_state["show_signup"] = False
                         st.rerun()
                     else:
                         st.error(data.get("error", {}).get("message", "Signup failed."))
                 except Exception as e:
                     st.error(f"Signup error: {e}")
 
-        st.markdown("""
-            <p style='margin-top: 1em;'>
-                Already have an account?
-                <a href='.'>← Back to login</a>
-            </p>
-        """, unsafe_allow_html=True)
+        # Toggle back to login
+        if st.markdown("Already have an account? [← Back to login](#)"):
+            if st.button("⬅ Back to Login", key="back_to_login_button"):
+                st.session_state["show_signup"] = False
+                st.rerun()
+
 
 
 
