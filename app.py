@@ -30,6 +30,7 @@ FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY", os.getenv("FIREBASE_API_KE
 def firebase_auth_ui():
     st.title("🔐 Agentic Study Assistant Access")
 
+    # Initialize toggle state
     if "show_signup" not in st.session_state:
         st.session_state["show_signup"] = False
 
@@ -63,18 +64,9 @@ def firebase_auth_ui():
                     st.error(f"Login error: {e}")
 
         st.markdown("---")
-        if st.markdown("Don't have an account? [Create one](#)", unsafe_allow_html=True):
-            js = """
-            <script>
-            const links = Array.from(parent.document.querySelectorAll('a[href="#"]'));
-            links.forEach(link => {
-                link.addEventListener('click', () => {
-                    window.parent.postMessage({ type: 'toggle_signup' }, '*');
-                });
-            });
-            </script>
-            """
-            st.markdown(js, unsafe_allow_html=True)
+        if st.button("Don't have an account? Create one"):
+            st.session_state["show_signup"] = True
+            st.rerun()
 
     else:
         with st.form("signup_form"):
@@ -107,34 +99,9 @@ def firebase_auth_ui():
                     st.error(f"Signup error: {e}")
 
         st.markdown("---")
-        if st.markdown("Already have an account? [← Back to login](#)", unsafe_allow_html=True):
-            js = """
-            <script>
-            const links = Array.from(parent.document.querySelectorAll('a[href="#"]'));
-            links.forEach(link => {
-                link.addEventListener('click', () => {
-                    window.parent.postMessage({ type: 'toggle_signup' }, '*');
-                });
-            });
-            </script>
-            """
-            st.markdown(js, unsafe_allow_html=True)
-
-# JavaScript <-> Python bridge to toggle state
-st.markdown("""
-<script>
-window.addEventListener("message", (event) => {
-    if (event.data?.type === "toggle_signup") {
-        window.location.reload();
-    }
-});
-</script>
-""", unsafe_allow_html=True)
-
-# We ensure this toggle runs early in the app
-if "_toggle_signup" not in st.session_state:
-    st.session_state["_toggle_signup"] = False
-
+        if st.button("← Back to login"):
+            st.session_state["show_signup"] = False
+            st.rerun()
 
 
 def firebase_logout():
